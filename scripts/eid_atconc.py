@@ -19,5 +19,11 @@ def eid_atconc():
     #==========================================================================
     #   Import 150um dataset
     #==========================================================================
+    root = "data/electrolyte/electrolyte_150um_"
+    kcl_150um    = get_data(f"{root}kcl.csv",    label="kcl")
+    kno3_150um   = get_data(f"{root}kno3.csv",   label="kno3")
+    mgcl2_150um  = get_data(f"{root}mgcl2.csv",  label="mgcl2")
+    nacl_150um   = get_data(f"{root}nacl.csv",   label="nacl")
+    nano3_150um  = get_data(f"{root}nano3.csv",  label="nano3")
 #==============================================================================
 if __name__ == "__main__": eid_atconc()
