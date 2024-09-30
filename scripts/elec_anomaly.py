@@ -2,7 +2,6 @@
 #   Dependencies
 #==============================================================================
 import  matplotlib.pyplot   as plt
-from    sklearn.neighbors   import NearestNeighbors
 from    numpy               import where, sum, invert
 from    pandas              import concat
 from    helpers             import get_data

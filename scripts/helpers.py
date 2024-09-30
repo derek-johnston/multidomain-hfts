@@ -1,9 +1,10 @@
 #==============================================================================
 #   Dependencies
 #==============================================================================
+from numpy                      import where
 from numpy.random               import normal
 from pandas                     import read_csv
-from sklearn.neighbors          import KNeighborsClassifier
+from sklearn.neighbors          import KNeighborsClassifier, NearestNeighbors
 from sklearn.model_selection    import train_test_split
 from sklearn.metrics            import confusion_matrix, ConfusionMatrixDisplay
 #==============================================================================
@@ -40,4 +41,14 @@ def gen_model(dataset):
 def plot_cm(cm, axes):
     """Generate a confusion matrix plot"""
     cm.plot(ax=axes, cmap="Greys", colorbar=False, xticks_rotation="vertical")
+#==============================================================================
+def detect_anomalies(dataset, threshold=0.0019):
+    """Use unsupervised learning to detect anomalous samples."""
+    # Perform the nearest neighbor calculation
+    X = dataset.drop("label", axis=1).to_numpy()
+    y = dataset["label"].to_numpy()
+    model = NearestNeighbors().fit(X)
+    distances, _ = model.kneighbors(X)
+    # Compute the confusion matrix
+    anom_idxs = where(distances.mean(axis=1))
 #==============================================================================
