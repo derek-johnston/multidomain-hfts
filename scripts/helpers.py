@@ -2,9 +2,10 @@
 #   Dependencies
 #==============================================================================
 import matplotlib.pyplot        as plt
+from os                         import listdir
 from numpy                      import where
 from numpy.random               import normal
-from pandas                     import read_csv
+from pandas                     import read_csv, DataFrame
 from sklearn.neighbors          import KNeighborsClassifier, NearestNeighbors
 from sklearn.model_selection    import train_test_split
 from sklearn.metrics            import confusion_matrix, ConfusionMatrixDisplay
@@ -136,4 +137,39 @@ def plot_anomaly(results, threshold, filename):
     axes[0].set_title("(a)")
     plt.tight_layout()
     plt.savefig(f"images/{filename}.svg")
+#==============================================================================
+def semi_classify(root, class0, class1):
+    """Classify semiconductor devices"""
+    #==========================================================================
+    #   Prepare the data structure to hold the data.
+    #==========================================================================
+    datasets = [DataFrame() for _ in range(64)]
+    #==========================================================================
+    #   Read-in the data.
+    #==========================================================================
+    for file in listdir("data/semiconductor"):
+        if root in file:
+            data = read_csv(f"data/semiconductor/{file}", header=None)
+            print(f"Reading in {file}")
+            for i in range(64):
+                df = datasets[i]
+                row = data.iloc[i]
+                if class0 in file: row["label"] = class0
+                else: row["label"] = class1
+                df = df._append(row, ignore_index=True)
+                datasets[i] = df
+    #==========================================================================
+    #   Perform the classification
+    #==========================================================================
+    scores = []
+    for i in range(64):
+        X = datasets[i].drop("label", axis=1).to_numpy()
+        y = datasets[i]["label"].to_numpy()
+        X_train, X_test, y_train, y_test = train_test_split(X, y)
+        model = KNeighborsClassifier()
+        model.fit(X_train, y_train)
+        score = round(model.score(X_test, y_test), 2)
+        #print(f"({i+1}) Model Trained with score = {score}")
+        scores.append(score)
+    return scores
 #==============================================================================
