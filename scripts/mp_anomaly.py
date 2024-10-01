@@ -5,35 +5,43 @@ import  matplotlib.pyplot   as plt
 from    pandas              import concat
 from    helpers             import get_data, detect_anomalies, plot_anomaly
 #==============================================================================
-def elec_anomaly():
-    """Detect anomalous samples in electrolyte data"""
+def mp_anomaly():
+    """Detect anomalous samples in microparticle data"""
     #==========================================================================
-    #   Import the 150mm datasets
+    #   Read-in the data.
     #==========================================================================
-    noise = False
-    root = "data/electrolyte/electrolyte_150mm_"
-    kcl_150mm    = get_data(f"{root}kcl.csv",   label="kcl",    noise=noise)
-    nacl_150mm   = get_data(f"{root}nacl.csv",  label="nacl",   noise=noise)
+    root        = "data/microparticle/microparticle_amidine_"
+    amidine1    = get_data(f"{root}01.csv", label="amidine")
+    amidine2    = get_data(f"{root}02.csv", label="amidine")
+    amidine3    = get_data(f"{root}03.csv", label="amidine")
+    root        = "data/microparticle/microparticle_carbox_"
+    carbox1     = get_data(f"{root}01.csv", label="carbox")
+    carbox2     = get_data(f"{root}02.csv", label="carbox")
+    carbox3     = get_data(f"{root}03.csv", label="carbox")
+    amidine     = concat([amidine1, amidine2, amidine3])
+    carbox      = concat([carbox1, carbox2, carbox3])
     #==========================================================================
-    #   combine the dataset with anomalies
+    #   Compile the data
     #==========================================================================
     data = concat([
-        kcl_150mm.sample(frac=0.99),
-        nacl_150mm.sample(frac=0.01)
+        carbox.sample(frac=0.90),
+        amidine.sample(frac=0.10)
     ]).sample(frac=1)
     print(data.shape)
+    print(amidine.sample(frac=0.9).shape)
+    print(carbox.sample(frac=0.1).shape)
     #==========================================================================
-    #   Perform anomaly detection
+    #   Detect and plot anomalies
     #==========================================================================
-    threshold = 0.0010
+    threshold = 0.032
     best_threshold = 0.000
     max_avg = 0
-    while threshold < 0.0042:
+    while threshold < 0.042:
         print(f"Threshold = {threshold}")
-        results = detect_anomalies(data, real="kcl", fake="nacl", threshold=threshold)
+        results = detect_anomalies(data, real="carbox", fake="amidine", threshold=threshold)
         avg = (results["n_tp"] + results["n_tn"]) / 2
         print(f"{avg}")
-        if avg > max_avg: 
+        if avg > max_avg and avg < 95: 
             max_avg = (results["n_tp"] + results["n_tn"]) / 2
             best_threshold = threshold
         threshold = round(threshold + 0.0001, 4)
@@ -41,11 +49,9 @@ def elec_anomaly():
     print(f"Best threshold = {best_threshold}")
     print(100*"*")
     plot_anomaly(
-        detect_anomalies(data, real="kcl", fake="nacl", threshold=best_threshold),
+        detect_anomalies(data, real="carbox", fake="amidine", threshold=best_threshold),
         threshold=best_threshold,
-        filename="elec_anomaly"
+        filename="mp_anomaly"
     )
-    
-    
 #==============================================================================
-if __name__ == "__main__": elec_anomaly()
+if __name__ == "__main__": mp_anomaly()
