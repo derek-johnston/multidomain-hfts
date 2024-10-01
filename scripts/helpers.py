@@ -1,6 +1,7 @@
 #==============================================================================
 #   Dependencies
 #==============================================================================
+import matplotlib.pyplot        as plt
 from numpy                      import where
 from numpy.random               import normal
 from pandas                     import read_csv
@@ -64,10 +65,18 @@ def detect_anomalies(dataset, real="kcl", fake="nacl", threshold=0.0019):
         dist = distances.mean(axis=1)[i]
         if dataset.iloc[i]["label"] == real: true_neg.append((i, dist))
         else: false_neg.append((i, dist))
-    TP = round(100*len(true_pos)/len(anom_idxs[0]))
-    FP = round(100*len(false_pos)/len(anom_idxs[0]))
-    TN = round(100*len(true_neg)/len(noms_idxs[0]))
-    FN = round(100*len(false_neg)/len(noms_idxs[0]))
+    if len(anom_idxs[0]) > 0:
+        TP = round(100*len(true_pos)/len(anom_idxs[0]))
+        FP = round(100*len(false_pos)/len(anom_idxs[0]))
+    else:
+        TP = 0
+        FP = 0
+    if len(noms_idxs[0]) > 0:
+        TN = round(100*len(true_neg)/len(noms_idxs[0]))
+        FN = round(100*len(false_neg)/len(noms_idxs[0]))
+    else:
+        TN = 0
+        FN = 0
     print(100*"*")
     print("ANOMALY DETECTION")
     print(100*"*")
@@ -86,5 +95,45 @@ def detect_anomalies(dataset, real="kcl", fake="nacl", threshold=0.0019):
         "t_neg": true_neg,
         "f_neg": false_neg
     }
-
+#==============================================================================
+def plot_anomaly(results, threshold, filename):
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    plt.rcParams.update({"font.size": 9})
+    # Confusion Matrix
+    cm = [[results["n_tp"], results["n_fp"]], [results["n_fn"], results["n_tn"]]]
+    axes[1].imshow(cm, cmap="Greys")
+    for i in range(2):
+        for j in range(2):
+            if cm[i][j] > 50: color="white"
+            else: color="black"
+            axes[1].annotate(f"{str(cm[i][j])}%", xy=(j, i), ha="center", va="center", color=color, fontsize=16)
+    axes[1].set_title("(b)")
+    axes[1].set_yticks([0, 1], ["Anomaly", "Normal"])
+    axes[1].set_xticks([0, 1], ["Anomaly", "Normal"])
+    axes[1].set_ylabel("Predicted")
+    axes[1].set_xlabel("Actual")
+    # Scatter Plot
+    color_true = "black"
+    color_false = "dimgray"
+    for r, i in zip(results["t_pos"], range(len(results["t_pos"]))):
+        if i == 0: axes[0].scatter(r[0], r[1], color=color_true, marker="*", label="True Positive")
+        else: axes[0].scatter(r[0], r[1], color=color_true, marker="*")
+    for r, i in zip(results["t_neg"], range(len(results["t_neg"]))):
+        if i == 0: axes[0].scatter(r[0], r[1], color=color_false, marker="*", label="True Negative")
+        else: axes[0].scatter(r[0], r[1], color=color_false, marker="*")
+    for r, i in zip(results["f_pos"], range(len(results["f_pos"]))):
+        if i == 0: axes[0].scatter(r[0], r[1], color=color_true, marker="x", label="False Positive")
+        else: axes[0].scatter(r[0], r[1], color=color_true, marker="x")
+    for r, i in zip(results["f_neg"], range(len(results["f_neg"]))):
+        if i == 0: axes[0].scatter(r[0], r[1], color=color_false, marker="x", label="False Negative")
+        else: axes[0].scatter(r[0], r[1], color=color_false, marker="x")
+    axes[0].axhline(y=threshold, color="black", linestyle="--")
+    axes[0].legend(frameon=False)
+    axes[0].set_ylabel("Average Distance")
+    axes[0].set_xlabel("Sample Index")
+    axes[0].set_xlim([0, 1000])
+    axes[0].set_ylim([0.0010, 0.0040])
+    axes[0].set_title("(a)")
+    plt.tight_layout()
+    plt.savefig(f"images/{filename}.svg")
 #==============================================================================
