@@ -20,6 +20,8 @@ def process_semi_data(classes=["microcontroller", "timer"]):
                     row = data.iloc[i]
                     df = df._append(row, ignore_index=True)
                     datasets[i] = df
+    # Shuffle the DataFrames
+    for i in range(64): datasets[i] = datasets[i].sample(frac=1)
     # Save the list of DataFrams as a pickle file
     p_filename = f"semi_d"
     for c in classes: 
