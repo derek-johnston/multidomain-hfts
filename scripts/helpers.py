@@ -6,6 +6,7 @@ from os                         import listdir
 from numpy                      import where
 from numpy.random               import normal
 from pandas                     import read_csv, DataFrame
+from pickle                     import dump, load      
 from sklearn.neighbors          import KNeighborsClassifier, NearestNeighbors
 from sklearn.model_selection    import train_test_split
 from sklearn.metrics            import confusion_matrix, ConfusionMatrixDisplay
@@ -172,4 +173,42 @@ def semi_classify(root, class0, class1):
         #print(f"({i+1}) Model Trained with score = {score}")
         scores.append(score)
     return scores
+#==============================================================================
+def load_pickle_data(root="semi", classes=["microcontroller", "timer"]):
+    """Read-in the data from the pickles."""
+    p_filename = f"{root}_d"
+    for c in classes: 
+        p_filename += f"_{c}"
+    p_filename += ".pkl"
+    with open(f"pickles/{p_filename}", "rb") as file:
+        datasets = load(file)
+    return datasets
+#==============================================================================
+def load_pickle_model(root="semi", classes=["microcontroller", "timer"]):
+    """Read-in the models from the pickles."""
+    p_filename = f"{root}_m"
+    for c in classes: 
+        p_filename += f"_{c}"
+    p_filename += ".pkl"
+    with open(f"pickles/{p_filename}", "rb") as file:
+        models = load(file)
+    return models
+#==============================================================================
+def dump_pickle_results(results, root="semi", classes=["microcontroller", "timer"]):
+    p_filename = f"semi_r"
+    for c in classes: 
+        p_filename += f"_{c}"
+    p_filename += ".pkl"
+    with open(f"pickles/{p_filename}", "wb") as file:
+        dump(results, file)
+#==============================================================================
+def load_pickle_results(root="semi", classes=["microcontroller", "timer"]):
+    """Read-in the results from the pickles."""
+    p_filename = f"{root}_r"
+    for c in classes: 
+        p_filename += f"_{c}"
+    p_filename += ".pkl"
+    with open(f"pickles/{p_filename}", "rb") as file:
+        results = load(file)
+    return results
 #==============================================================================
