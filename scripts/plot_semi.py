@@ -5,7 +5,8 @@ from helpers import load_pickle_results
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from numpy.random import normal
-from numpy import mean
+from numpy import mean, array
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 #==============================================================================
 def plot_semi(classes=["microcontroller", "timer"]):
     """Plot the results of the HFTS semiconductor classification pipeline"""
@@ -13,6 +14,11 @@ def plot_semi(classes=["microcontroller", "timer"]):
     results = load_pickle_results(root="semi", classes=classes)
     means = results["means"]
     sdevs = results["sdevs"]
+    predictions = array(results["predictions"])
+    labels = array(results["labels"])
+
+    y_pred = predictions.flatten()
+    y_true = labels.flatten()
     
     diffs = [mean - sdev for mean, sdev in zip(means, sdevs)]
 
@@ -40,8 +46,17 @@ def plot_semi(classes=["microcontroller", "timer"]):
     ax0.set_title("(a)")
 
     ax1.set_title("(b)")
+    cm = confusion_matrix(y_true, y_pred)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=classes)
+    disp.plot(ax=ax1, cmap="Greys", colorbar=False, xticks_rotation="vertical")
+    ax1.set_xlabel("")
+    ax1.set_ylabel("")
     plt.tight_layout()
-    plt.savefig("images/semi.svg")
+    imagepath = "images/semi"
+    for c in classes:
+        imagepath += f"_{c}"
+    imagepath += ".svg"
+    plt.savefig(imagepath)
 
 #==============================================================================
 if __name__ == "__main__":

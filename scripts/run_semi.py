@@ -5,6 +5,7 @@ from process_semi_data  import process_semi_data
 from model_semi         import model_semi
 from test_semi          import test_semi
 from eval_semi          import eval_semi
+from plot_semi          import plot_semi
 #==============================================================================
 def run_semi():
     """Run the HFTS semiconductor classification pipeline"""
@@ -35,6 +36,10 @@ def run_semi():
         print("Testing the models.")
         print(100*"*")
         test_semi(c)
+        print(100*"*")
+        print("Generating the figures.")
+        print(100*"*")
+        plot_semi(c)
 #==============================================================================
 if __name__ == "__main__":
     run_semi()

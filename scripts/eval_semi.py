@@ -1,40 +1,30 @@
 #==============================================================================
 #   Dependencies
 #==============================================================================
+import matplotlib.pyplot as plt
 from helpers import load_pickle_results, load_pickle_tests
 from numpy   import array, unique
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 #==============================================================================
 def eval_semi(classes=["microcontroller", "timer"]):
     """Evaluate the results of the HFTS semiconductor classification pipeline"""
     # Load the results
     results     = load_pickle_results(root="semi", classes=classes)
-    t_scores    = load_pickle_tests(root="semi", classes=classes)
     # Convert the results to arrays
     scores      = array(results["scores"])
     predictions = array(results["predictions"])
     labels      = array(results["labels"])
-    t_scores    = array(t_scores)
-
-    correct = [0 for _ in range(64)]
-    for j in range(64):
-        preds = predictions[j]
-        print(len(preds))
-        for i, label in enumerate(labels):
-            p = preds[i]
-            print(f"({i+1}) {label} -> {p}")
-            if label == p:
-                correct[j] += 1
-    print(f"({len(correct)}) ({type(correct)}) {correct}")
-    print(f"({len(scores)}) ({type(scores)}) {scores}")
-
-    """
-    for i, label in enumerate(labels):
-        print(f"({i+1}) {label}")
-        for j in range(64):
-            print(f"{predictions[j]}")
-            print(len(predictions[j]))
-            return
-    """
+    y_true = labels.flatten()
+    y_pred = predictions.flatten()
+    print(100*"*")
+    print("CLASSIFICATION REPORT")
+    print(100*"*")
+    print(classification_report(y_true, y_pred, target_names=unique(y_true)))
+    print(100*"*")
+    cm = confusion_matrix(y_true, y_pred)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=unique(y_true))
+    disp.plot()
+    plt.show()
 #==============================================================================
 if __name__ == "__main__":
     classes = [

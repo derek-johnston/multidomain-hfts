@@ -2,6 +2,7 @@
 #   Dependencies
 #==============================================================================
 import matplotlib.pyplot        as plt
+from matplotlib.gridspec        import GridSpec
 from os                         import listdir
 from numpy                      import where
 from numpy.random               import normal
@@ -99,43 +100,46 @@ def detect_anomalies(dataset, real="kcl", fake="nacl", threshold=0.0019):
     }
 #==============================================================================
 def plot_anomaly(results, threshold, filename):
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig = plt.figure(figsize=(10, 3.25))
     plt.rcParams.update({"font.size": 9})
+    gs = GridSpec(1, 6, figure=fig)
+    ax0 = fig.add_subplot(gs[0, 0:4])
+    ax1 = fig.add_subplot(gs[0, 4:6])
     # Confusion Matrix
     cm = [[results["n_tp"], results["n_fp"]], [results["n_fn"], results["n_tn"]]]
-    axes[1].imshow(cm, cmap="Greys")
+    ax1.imshow(cm, cmap="Greys")
     for i in range(2):
         for j in range(2):
             if cm[i][j] > 50: color="white"
             else: color="black"
-            axes[1].annotate(f"{str(cm[i][j])}%", xy=(j, i), ha="center", va="center", color=color, fontsize=16)
-    axes[1].set_title("(b)")
-    axes[1].set_yticks([0, 1], ["Anomaly", "Normal"])
-    axes[1].set_xticks([0, 1], ["Anomaly", "Normal"])
-    axes[1].set_ylabel("Predicted")
-    axes[1].set_xlabel("Actual")
+            ax1.annotate(f"{str(cm[i][j])}%", xy=(j, i), ha="center", va="center", color=color, fontsize=16)
+    ax1.set_title("(b)")
+    ax1.set_yticks([0, 1], ["Anomaly", "Normal"])
+    ax1.set_xticks([0, 1], ["Anomaly", "Normal"])
+    ax1.set_ylabel("")
+    ax1.set_xlabel("")
     # Scatter Plot
     color_true = "black"
     color_false = "dimgray"
     for r, i in zip(results["t_pos"], range(len(results["t_pos"]))):
-        if i == 0: axes[0].scatter(r[0], r[1], color=color_true, marker="*", label="True Positive")
-        else: axes[0].scatter(r[0], r[1], color=color_true, marker="*")
+        if i == 0: ax0.scatter(r[0], r[1], color=color_true, marker="*", label="True Positive")
+        else: ax0.scatter(r[0], r[1], color=color_true, marker="*")
     for r, i in zip(results["t_neg"], range(len(results["t_neg"]))):
-        if i == 0: axes[0].scatter(r[0], r[1], color=color_false, marker="*", label="True Negative")
-        else: axes[0].scatter(r[0], r[1], color=color_false, marker="*")
+        if i == 0: ax0.scatter(r[0], r[1], color=color_false, marker="*", label="True Negative")
+        else: ax0.scatter(r[0], r[1], color=color_false, marker="*")
     for r, i in zip(results["f_pos"], range(len(results["f_pos"]))):
-        if i == 0: axes[0].scatter(r[0], r[1], color=color_true, marker="x", label="False Positive")
-        else: axes[0].scatter(r[0], r[1], color=color_true, marker="x")
+        if i == 0: ax0.scatter(r[0], r[1], color=color_true, marker="x", label="False Positive")
+        else: ax0.scatter(r[0], r[1], color=color_true, marker="x")
     for r, i in zip(results["f_neg"], range(len(results["f_neg"]))):
-        if i == 0: axes[0].scatter(r[0], r[1], color=color_false, marker="x", label="False Negative")
-        else: axes[0].scatter(r[0], r[1], color=color_false, marker="x")
-    axes[0].axhline(y=threshold, color="black", linestyle="--")
-    axes[0].legend(frameon=False)
-    axes[0].set_ylabel("Average Distance")
-    axes[0].set_xlabel("Sample Index")
-    axes[0].set_xlim([0, 1000])
-    axes[0].set_ylim([0.0010, 0.0040])
-    axes[0].set_title("(a)")
+        if i == 0: ax0.scatter(r[0], r[1], color=color_false, marker="x", label="False Negative")
+        else: ax0.scatter(r[0], r[1], color=color_false, marker="x")
+    ax0.axhline(y=threshold, color="black", linestyle="--")
+    ax0.legend(frameon=False, loc="upper left", ncol=4)
+    ax0.set_ylabel("Average Distance")
+    ax0.set_xlabel("Sample Index")
+    ax0.set_xlim([0, 1000])
+    ax0.set_ylim([0.0008, 0.0042])
+    ax0.set_title("(a)")
     plt.tight_layout()
     plt.savefig(f"images/{filename}.svg")
 #==============================================================================
