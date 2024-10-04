@@ -1,9 +1,10 @@
 #==============================================================================
 #   Dependencies
 #==============================================================================
-from os     import listdir
-from pandas import read_csv, DataFrame
-from pickle import dump
+from numpy.random   import normal
+from os             import listdir
+from pandas         import read_csv, DataFrame
+from pickle         import dump
 #==============================================================================
 def process_semi_data(classes=["microcontroller", "timer"]):
     """Read-in, process, and store an HFTS semiconductor dataset"""
@@ -14,6 +15,7 @@ def process_semi_data(classes=["microcontroller", "timer"]):
             if c in f:
                 print(f"Reading in {f}")
                 data = read_csv(f"data/semiconductor/{f}", header=None)
+                data += normal(0, 0.0025, data.shape)
                 data["label"] = c
                 for i in range(64):
                     df = datasets[i]

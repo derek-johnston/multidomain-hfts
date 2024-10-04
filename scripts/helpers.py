@@ -212,3 +212,13 @@ def load_pickle_results(root="semi", classes=["microcontroller", "timer"]):
         results = load(file)
     return results
 #==============================================================================
+def load_pickle_tests(root="semi", classes=["microcontroller", "timer"]):
+    """Read-in the test scores from the pickles."""
+    p_filename = f"{root}_t"
+    for c in classes: 
+        p_filename += f"_{c}"
+    p_filename += ".pkl"
+    with open(f"pickles/{p_filename}", "rb") as file:
+        tests = load(file)
+    return tests
+#==============================================================================
