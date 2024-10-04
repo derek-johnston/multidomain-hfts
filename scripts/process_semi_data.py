@@ -15,7 +15,7 @@ def process_semi_data(classes=["microcontroller", "timer"], noise=0.0025):
             if c in f:
                 print(f"Reading in {f}")
                 data = read_csv(f"data/semiconductor/{f}", header=None)
-                data += normal(0, 0.0025, data.shape)
+                data += normal(0, noise, data.shape)
                 data["label"] = c
                 for i in range(64):
                     df = datasets[i]

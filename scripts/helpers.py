@@ -96,7 +96,9 @@ def detect_anomalies(dataset, real="kcl", fake="nacl", threshold=0.0019):
         "t_pos": true_pos,
         "f_pos": false_pos,
         "t_neg": true_neg,
-        "f_neg": false_neg
+        "f_neg": false_neg,
+        "a_idx": anom_idxs,
+        "n_idx": noms_idxs
     }
 #==============================================================================
 def plot_anomaly(results, threshold, filename):
