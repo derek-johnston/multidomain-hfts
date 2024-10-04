@@ -11,7 +11,7 @@ def test_semi(classes=["microcontroller", "timer"]):
     #return    # Read-in the models from the pickles
     models = load_pickle_model(root="semi", classes=classes)
     # Test the models
-    scores = [0 for _ in range(64)]
+    scores = [[] for _ in range(64)]
     predictions = [[] for _ in range(64)]
     labels = ["" for _ in range(len(datasets[0]))]
     for i, (model, data) in enumerate(zip(models, datasets)):
@@ -23,14 +23,20 @@ def test_semi(classes=["microcontroller", "timer"]):
             prediction = model.predict(X)
             predictions[i].append(prediction[0])
             score = 1 if prediction[0] == y else 0
-            scores[i] += score
-            print(f"Model {i+1} tested with score = {score}")
-    
+            scores[i].append(score)
+            #print(f"Model {i+1} tested with score = {score}")
+    means = []
+    sdevs = []
+    for score in scores:
+        means.append(round(sum(score) / len(score), 3))
+        sdevs.append(round((sum([(s - means[-1])**2 for s in score]) / len(score))**0.5, 3))
+
     # Pickle the results
     results = {
+        #"norm_scores"   : norm_scores,
         "scores"        : scores,
-        "predictions"   : predictions,
-        "labels"        : labels
+        "means"         : means,
+        "sdevs"         : sdevs,
     }
     dump_pickle_results(results, root="semi", classes=classes)
 #==============================================================================

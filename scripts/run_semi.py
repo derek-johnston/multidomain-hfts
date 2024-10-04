@@ -35,11 +35,6 @@ def run_semi():
         print("Testing the models.")
         print(100*"*")
         test_semi(c)
-    print(100*"*")
-    print("Evaluating the results.")
-    print(100*"*")
-    for c in classes:
-        eval_semi(c)
 #==============================================================================
 if __name__ == "__main__":
     run_semi()

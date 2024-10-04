@@ -14,14 +14,27 @@ def eval_semi(classes=["microcontroller", "timer"]):
     predictions = array(results["predictions"])
     labels      = array(results["labels"])
     t_scores    = array(t_scores)
-    correct = 0
-    for prediction, label in zip(predictions, labels):
-        # Find the most frequent string in the labels array
-        unique_labels, counts = unique(label, return_counts=True)
-        most_frequent_label = unique_labels[counts.argmax()]
-        if label == most_frequent_label:
-            correct += 1
-    print(f"Correct = {correct} out of {len(labels)} | {100 * correct / len(labels)}%")
+
+    correct = [0 for _ in range(64)]
+    for j in range(64):
+        preds = predictions[j]
+        print(len(preds))
+        for i, label in enumerate(labels):
+            p = preds[i]
+            print(f"({i+1}) {label} -> {p}")
+            if label == p:
+                correct[j] += 1
+    print(f"({len(correct)}) ({type(correct)}) {correct}")
+    print(f"({len(scores)}) ({type(scores)}) {scores}")
+
+    """
+    for i, label in enumerate(labels):
+        print(f"({i+1}) {label}")
+        for j in range(64):
+            print(f"{predictions[j]}")
+            print(len(predictions[j]))
+            return
+    """
 #==============================================================================
 if __name__ == "__main__":
     classes = [
@@ -37,4 +50,5 @@ if __name__ == "__main__":
     ]
     for c in classes:
         eval_semi(classes=c)
+        break
 #==============================================================================
