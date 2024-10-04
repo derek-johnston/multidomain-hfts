@@ -22,6 +22,7 @@ def run_semi():
     for c in classes:
         print(100*"*")
         print("Running the HFTS semiconductor classification pipeline")
+        print(f"Classes = {c}")
         print(100*"*")
         print("Reading in the data.")
         print(100*"*")

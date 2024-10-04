@@ -36,5 +36,5 @@ if __name__ == "__main__":
         ["cc8z", "d855", "ckdf", "dont", "78j9", "93y8", "851t"],
     ]
     for c in classes:
-        plot_semi(classes=c)
+        eval_semi(classes=c)
 #==============================================================================

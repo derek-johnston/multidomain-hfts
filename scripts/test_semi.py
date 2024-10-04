@@ -13,18 +13,19 @@ def test_semi(classes=["microcontroller", "timer"]):
     # Test the models
     scores = [0 for _ in range(64)]
     predictions = [[] for _ in range(64)]
-    labels = ["" for _ in range(64)]
+    labels = ["" for _ in range(len(datasets[0]))]
     for i, (model, data) in enumerate(zip(models, datasets)):
-        for _, row in data.iterrows():
+        for j, row in data.iterrows():
             row = row.to_frame().T
             X = row.drop("label", axis=1)
             y = row["label"].iloc[0]
-            labels[i] = y
+            labels[j] = y
             prediction = model.predict(X)
             predictions[i].append(prediction[0])
             score = 1 if prediction[0] == y else 0
             scores[i] += score
             print(f"Model {i+1} tested with score = {score}")
+    
     # Pickle the results
     results = {
         "scores"        : scores,
@@ -34,5 +35,5 @@ def test_semi(classes=["microcontroller", "timer"]):
     dump_pickle_results(results, root="semi", classes=classes)
 #==============================================================================
 if __name__ == "__main__":
-    test_semi(classes=["cc8z", "d855"])
+    test_semi()
 #==============================================================================
