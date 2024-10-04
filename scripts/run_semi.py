@@ -27,7 +27,7 @@ def run_semi():
         print(100*"*")
         print("Reading in the data.")
         print(100*"*")
-        process_semi_data(c)
+        process_semi_data(c, noise=0.001)
         print(100*"*")
         print("Training the models.")
         print(100*"*")

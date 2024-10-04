@@ -1,12 +1,12 @@
 #==============================================================================
 #   Dependencies
 #==============================================================================
-from numpy.random   import normal
+from numpy.random   import seed, normal
 from os             import listdir
 from pandas         import read_csv, DataFrame
 from pickle         import dump
 #==============================================================================
-def process_semi_data(classes=["microcontroller", "timer"]):
+def process_semi_data(classes=["microcontroller", "timer"], noise=0.0025):
     """Read-in, process, and store an HFTS semiconductor dataset"""
     datasets = [DataFrame() for _ in range(64)]
     for c in classes:
@@ -23,8 +23,9 @@ def process_semi_data(classes=["microcontroller", "timer"]):
                     df = df._append(row, ignore_index=True)
                     datasets[i] = df
     # Shuffle the DataFrames
+    seed(42)
     for i in range(64): 
-        datasets[i] = datasets[i].sample(frac=1).reset_index(drop=True)
+        datasets[i] = datasets[i].sample(frac=1, random_state=42).reset_index(drop=True)
     # Save the list of DataFrams as a pickle file
     p_filename = f"semi_d"
     for c in classes: 
