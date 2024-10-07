@@ -151,6 +151,7 @@ def semi_classify(root, class0, class1):
     #   Prepare the data structure to hold the data.
     #==========================================================================
     datasets = [DataFrame() for _ in range(64)]
+    
     #==========================================================================
     #   Read-in the data.
     #==========================================================================
@@ -228,3 +229,38 @@ def load_pickle_tests(root="semi", classes=["microcontroller", "timer"]):
         tests = load(file)
     return tests
 #==============================================================================
+def dump_pickle_adata(data, root="semi", classes=["microcontroller", "timer"]):
+    p_filename = f"semi_ad"
+    for c in classes: 
+        p_filename += f"_{c}"
+    p_filename += ".pkl"
+    with open(f"pickles/{p_filename}", "wb") as file:
+        dump(data, file)
+#==============================================================================
+def load_pickle_adata(root="semi", classes=["microcontroller", "timer"]):
+    """Read-in the test scores from the pickles."""
+    p_filename = f"{root}_ad"
+    for c in classes: 
+        p_filename += f"_{c}"
+    p_filename += ".pkl"
+    with open(f"pickles/{p_filename}", "rb") as file:
+        data = load(file)
+    return data
+#==============================================================================
+def dump_pickle_aresults(data, root="semi", classes=["microcontroller", "timer"]):
+    p_filename = f"semi_ar"
+    for c in classes: 
+        p_filename += f"_{c}"
+    p_filename += ".pkl"
+    with open(f"pickles/{p_filename}", "wb") as file:
+        dump(data, file)
+#==============================================================================
+def load_pickle_aresults(root="semi", classes=["microcontroller", "timer"]):
+    """Read-in the test scores from the pickles."""
+    p_filename = f"{root}_ar"
+    for c in classes: 
+        p_filename += f"_{c}"
+    p_filename += ".pkl"
+    with open(f"pickles/{p_filename}", "rb") as file:
+        data = load(file)
+    return data
